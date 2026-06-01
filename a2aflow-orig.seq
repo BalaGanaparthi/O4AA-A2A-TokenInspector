@@ -1,0 +1,100 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "background": "#f8fafc",
+    "primaryColor": "#e2e8f0",
+    "primaryTextColor": "#0f172a",
+    "primaryBorderColor": "#475569",
+    "lineColor": "#0f172a",
+    "actorLineColor": "#0f172a",
+    "signalColor": "#0f172a",
+    "signalTextColor": "#0f172a",
+    "textColor": "#0f172a",
+    "noteBkgColor": "#f1f5f9",
+    "noteTextColor": "#0f172a",
+    "noteBorderColor": "#64748b",
+    "actorBkg": "#e2e8f0",
+    "actorTextColor": "#0f172a",
+    "actorBorder": "#0f172a",
+    "sequenceNumberColor": "#ffffff",
+    "sequenceNumberBkg": "#0f172a"
+  }
+}}%%
+sequenceDiagram
+    autonumber
+
+    participant       SC      as Service Client
+    participant ProGearAS as ProGearSales AuthZServer
+    participant PSA     as ProGearSales Agent
+    participant OrgAS   as Okta Org AuthZServer
+    participant PIAS    as ProGearInventory AuthZServer
+    participant PIA     as ProGearInventory Agent
+    participant MCPAS   as InventoryMCP AuthZServer
+    participant MCP     as InventoryMCP Server
+
+    %% ─────────────────────────────────────────────
+    %% STEP 1 — Client Credentials Grant
+    %% ─────────────────────────────────────────────
+    rect rgb(167, 243, 208)
+        Note over SC,ProGearAS: Step 1 — Client Credentials Grant
+
+        SC->>+ProGearAS: POST /oauth2/auszakltaaxuEH0s71d7/v1/token<br/>grant_type=client_credentials<br/>scope=agent.invoke<br/>resource=https://progear.com/sales<br/>Authorization: Basic {0oazakcme19yZ44th1d7:secret}
+
+        ProGearAS-->>-SC: 200 OK<br/>T1: access_token<br/>iss=ProGearAS · aud=progear.com/sales<br/>sub=0oazakcme19yZ44th1d7 · scp=agent.invoke
+    end
+
+    SC->>PSA: Invoke ProGearSales Agent (bearer T1)
+
+    %% ─────────────────────────────────────────────
+    %% STEP 2 — Token Exchange: T1 → T2 id-jag
+    %% ─────────────────────────────────────────────
+    rect rgb(191, 219, 254)
+        Note over PSA,OrgAS: Step 2 — Token Exchange → id-jag (Org AS)
+
+        PSA->>+OrgAS: POST /oauth2/v1/token<br/>grant_type=urn:ietf:params:oauth:grant-type:token-exchange<br/>subject_token=T1<br/>subject_token_type=...access_token<br/>requested_token_type=...id-jag<br/>audience=https://…/oauth2/auszalb8rzrFTrhPa1d7<br/>resource=https://progear.com/inventory<br/>scope=agent.invoke<br/>client_assertion=JWT(iss=wlpzamsn8ruzX9RiH1d7, aud=OrgAS)
+
+        OrgAS-->>-PSA: 200 OK<br/>T2: id-jag (oauth-id-jag+jwt)<br/>iss=OrgAS · aud=ProGearInventory AS<br/>sub=0oazakcme19yZ44th1d7 · client_id=wlpzamsn8ruzX9RiH1d7<br/>act: { sub=PSA → act: { sub=ServiceClient } }
+    end
+
+    %% ─────────────────────────────────────────────
+    %% STEP 3 — JWT Bearer Grant: T2 → T3
+    %% ─────────────────────────────────────────────
+    rect rgb(233, 213, 255)
+        Note over PSA,PIAS: Step 3 — JWT Bearer Grant (ProGearInventory AS)
+        Note right of PSA: ⚠ client_assertion.iss MUST equal T2.client_id<br/>(Okta enforces this constraint)
+
+        PSA->>+PIAS: POST /oauth2/auszalb8rzrFTrhPa1d7/v1/token<br/>grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer<br/>assertion=T2<br/>client_assertion=JWT(iss=wlpzamsn8ruzX9RiH1d7, aud=ProGearInventory AS)
+
+        PIAS-->>-PSA: 200 OK<br/>T3: access_token<br/>iss=ProGearInventory AS · aud=progear.com/inventory<br/>cid=wlpzamsn8ruzX9RiH1d7<br/>act chain from T2 preserved
+    end
+
+    PSA->>PIA: Invoke ProGearInventory Agent (bearer T3)
+
+    %% ─────────────────────────────────────────────
+    %% STEP 4 — Token Exchange: T3 → T4 id-jag
+    %% ─────────────────────────────────────────────
+    rect rgb(153, 246, 228)
+        Note over PIA,OrgAS: Step 4 — Token Exchange → id-jag (Org AS)
+
+        PIA->>+OrgAS: POST /oauth2/v1/token<br/>grant_type=urn:ietf:params:oauth:grant-type:token-exchange<br/>subject_token=T3<br/>subject_token_type=...access_token<br/>requested_token_type=...id-jag<br/>audience=https://…/oauth2/auszam0ov23cgv2Kd1d7<br/>scope=agent.invoke<br/>client_assertion=JWT(iss=wlpzantdeiOQGRrpF1d7, aud=OrgAS)
+
+        OrgAS-->>-PIA: 200 OK<br/>T4: id-jag (oauth-id-jag+jwt)<br/>iss=OrgAS · aud=InventoryMCP AS<br/>sub=0oazakcme19yZ44th1d7 · client_id=wlpzantdeiOQGRrpF1d7<br/>act: { sub=PIA → act: { sub=PSA → act: { sub=ServiceClient } } }
+    end
+
+    %% ─────────────────────────────────────────────
+    %% STEP 5 — JWT Bearer Grant: T4 → T5 (FINAL)
+    %% ─────────────────────────────────────────────
+    rect rgb(254, 215, 170)
+        Note over PIA,MCPAS: Step 5 — JWT Bearer Grant (InventoryMCP AS) — FINAL TOKEN
+
+        PIA->>+MCPAS: POST /oauth2/auszam0ov23cgv2Kd1d7/v1/token<br/>grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer<br/>assertion=T4<br/>client_assertion=JWT(iss=wlpzantdeiOQGRrpF1d7, aud=InventoryMCP AS)
+
+        MCPAS-->>-PIA: 200 OK ✅<br/>T5: access_token (FINAL)<br/>iss=InventoryMCP AS · aud=progear.com/inventoryMCP-resource<br/>cid=wlpzantdeiOQGRrpF1d7 · scp=agent.invoke<br/>act: { sub=PIA → act: { sub=PSA → act: { sub=ServiceClient } } }
+    end
+
+    rect rgb(203, 213, 225)
+        Note over PIA,MCP: T5 carries the full A2A delegation chain (act):<br/>ProGearInventory (wlpzantdeiOQGRrpF1d7)<br/>  └─ ProGearSales (wlpzamsn8ruzX9RiH1d7)<br/>       └─ ServiceClient (0oazakcme19yZ44th1d7)
+    end
+
+    PIA->>+MCP: GET /inventory · Authorization: Bearer T5
+    MCP-->>-PIA: 200 OK · inventory data
