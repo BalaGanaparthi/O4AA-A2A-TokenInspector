@@ -22,8 +22,3 @@
 [functions."*"]
   timeout = 26
 
-# Redirect all unmatched paths to Next.js (required for dynamic routes)
-[[redirects]]
-  from   = "/*"
-  to     = "/.netlify/functions/___netlify-handler"
-  status = 200
