@@ -3,9 +3,9 @@
 ## 1. Get ProGear Service Client Tokens using OAuth client credentials grant flow for ProGearSales Agent
 
 ```bash
-curl --location 'https://bala-secures-ai.oktapreview.com/oauth2/auszakltaaxuEH0s71d7/v1/token' \
+curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/auszakltaaxuEV0s71d7/v1/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
---header 'Authorization: Basic MG9hemFrY21lMTl5WjQ0dGgxZDc6LVNPQkMxMDgzNVdwdlRjYzdQVmMxZnllZWJZNUpVSWlYal9VTUp3Q0ZNN3dBTmd6ZHJrSGU0QklGMlRrWUZ1eQ==' \
+--header 'Authorization: Basic <B64{ClientID:ClientSecret}>' \
 --data-urlencode 'grant_type=client_credentials' \
 --data-urlencode 'scope=agent.invoke' \
 --data-urlencode 'resource=https://progear.com/sales'
@@ -17,13 +17,13 @@ Store the access token from the response for use in the next step.
 ## 2. This call will be made at ProGearSales Agent : Token Exchange using the ProGear Service Access Token to get a IDJAG for ProGearInventory Agent
 
 ```bash
-curl --location 'https://bala-secures-ai.oktapreview.com/oauth2/v1/token' \
+curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/v1/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:token-exchange' \
 --data-urlencode 'subject_token={AccessTokenFromStep1}' \
 --data-urlencode 'subject_token_type=urn:ietf:params:oauth:token-type:access_token' \
 --data-urlencode 'requested_token_type=urn:ietf:params:oauth:token-type:id-jag' \
---data-urlencode 'audience=https://bala-secures-ai.oktapreview.com/oauth2/auszalb8rzrFTrhPa1d7' \
+--data-urlencode 'audience=https://ok-secures-ai.oktapreview.com/oauth2/auszalb8rzrRVrhPa1d7' \
 --data-urlencode 'resource=https://progear.com/inventory' \
 --data-urlencode 'client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer' \
 --data-urlencode 'client_assertion={JWTBearerToken}' \
@@ -39,7 +39,7 @@ Claims in {JWTBearerToken}:
 {
   "iss": "wlpzamsn8ruzX9RiH1d7",
   "sub": "wlpzamsn8ruzX9RiH1d7",
-  "aud": "https://bala-secures-ai.oktapreview.com/oauth2/v1/token",
+  "aud": "https://ok-secures-ai.oktapreview.com/oauth2/v1/token",
   "exp": 1780042293,
   "iat": 1780042233,
   "jti": "c0dce9dd-9987-4430-bd61-00f2f831ab45"
@@ -99,7 +99,7 @@ Agent ProGearSales will call the token endpoint with the ProGearInventory Agent'
 Below is the curl command used to exchange the IDJAG for an ProGearInventory A2A access token:
 
 ```bash
-curl --location 'https://bala-secures-ai.oktapreview.com/oauth2/auszalb8rzrFTrhPa1d7/v1/token' \
+curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/auszalb8rzrRVrhPa1d7/v1/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer' \
 --data-urlencode 'assertion={ID-JAG-FOR-PROGEARINVENTORY}' \
@@ -116,14 +116,14 @@ Claims in {JWTBearerToken}:
 {
   "iss": "wlpzamsn8ruzX9RiH1d7",
   "sub": "wlpzamsn8ruzX9RiH1d7",
-  "aud": "https://bala-secures-ai.oktapreview.com/oauth2/auszalb8rzrFTrhPa1d7/v1/token",
+  "aud": "https://ok-secures-ai.oktapreview.com/oauth2/auszalb8rzrRVrhPa1d7/v1/token",
   "exp": 1780040007,
   "iat": 1780039947,
   "jti": "85a7589b-2bb6-4589-a70b-5d63d2a10ccd"
 }
 ```
 
-> **Note:** The `iss`/`sub` must be `wlpzamsn8ruzX9RiH1d7` (ProGearSales Agent), not the ProGearInventory Agent ID. Okta enforces that the `client_id` in the JWT bearer grant assertion (T2) matches the `client_id` used to authenticate the client. The `aud` must be the ProGearInventory AS token endpoint (`auszalb8rzrFTrhPa1d7`), not the InventoryMCP AS.
+> **Note:** The `iss`/`sub` must be `wlpzamsn8ruzX9RiH1d7` (ProGearSales Agent), not the ProGearInventory Agent ID. Okta enforces that the `client_id` in the JWT bearer grant assertion (T2) matches the `client_id` used to authenticate the client. The `aud` must be the ProGearInventory AS token endpoint (`auszalb8rzrRVrhPa1d7`), not the InventoryMCP AS.
 
 The PrivateKeyJWK is the same as used in Step 2 (kid: `a7531e69eadb5b5ab26488c49aa183e7`) — ProGearSales Agent's private key.
 
@@ -132,13 +132,13 @@ The response from this request will contain an `access_token` field {PROGEARINVE
 ## 4. Use the obtained A2A access token from Step 3 to exchange for ProGearInventory Agent IDJAG that can be used for token exchange to call InventoryMCP API
 
 ```bash
-curl --location 'https://bala-secures-ai.oktapreview.com/oauth2/v1/token' \
+curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/v1/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:token-exchange' \
 --data-urlencode 'subject_token={PROGEARINVENTORY-A2A-ACCESS-TOKEN}' \
 --data-urlencode 'subject_token_type=urn:ietf:params:oauth:token-type:access_token' \
 --data-urlencode 'requested_token_type=urn:ietf:params:oauth:token-type:id-jag' \
---data-urlencode 'audience=https://bala-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7' \
+--data-urlencode 'audience=https://ok-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7' \
 --data-urlencode 'client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer' \
 --data-urlencode 'client_assertion={JWTBearerToken}' \
 --data-urlencode 'scope=agent.invoke'
@@ -153,7 +153,7 @@ Claims in {JWTBearerToken}:
 {
   "iss": "wlpzantdeiOQGRrpF1d7",
   "sub": "wlpzantdeiOQGRrpF1d7",
-  "aud": "https://bala-secures-ai.oktapreview.com/oauth2/v1/token",
+  "aud": "https://ok-secures-ai.oktapreview.com/oauth2/v1/token",
   "exp": 1780042841,
   "iat": 1780042781,
   "jti": "e101ad08-74a2-4a3d-b7e4-c8885d851866"
@@ -184,7 +184,7 @@ The response from this request will contain an `access_token` {IDJAG-FOR-INVENTO
 ## 5. Use the obtained IDJAG from Step 4 to exchange for an access token that can be used to call InventoryMCP API
 
 ```bash
-curl --location 'https://bala-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7/v1/token' \
+curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7/v1/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer' \
 --data-urlencode 'assertion={IDJAG-FOR-INVENTORYMCP}' \
@@ -201,7 +201,7 @@ Claims in {JWTBearerToken}:
 {
   "iss": "wlpzantdeiOQGRrpF1d7",
   "sub": "wlpzantdeiOQGRrpF1d7",
-  "aud": "https://bala-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7/v1/token",
+  "aud": "https://ok-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7/v1/token",
   "exp": 1780043158,
   "iat": 1780043098,
   "jti": "df5f0702-3943-4b34-b9fe-5450eaca18fa"
@@ -218,7 +218,7 @@ The final access token (T5) issued by InventoryMCP AS carries a nested `act` cla
 
 ```json
 {
-  "iss": "https://bala-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7",
+  "iss": "https://ok-secures-ai.oktapreview.com/oauth2/auszam0ov23cgv2Kd1d7",
   "aud": "https://progear.com/inventoryMCP-resource",
   "sub": "0oazakcme19yZ44th1d7",
   "sub_profile": "service",
@@ -241,12 +241,12 @@ The final access token (T5) issued by InventoryMCP AS carries a nested `act` cla
 
 Reading the `act` chain from innermost to outermost:
 
-| Principal | ID | Role |
-|---|---|---|
-| Service Client | `0oazakcme19yZ44th1d7` | Origin — initiated the request |
-| ProGearSales Agent | `wlpzamsn8ruzX9RiH1d7` | Acted on behalf of the service client |
-| ProGearInventory Agent | `wlpzantdeiOQGRrpF1d7` | Acted on behalf of ProGearSales |
-| InventoryMCP API | — | Final recipient (`aud`) |
+| Principal              | ID                     | Role                                  |
+| ---------------------- | ---------------------- | ------------------------------------- |
+| Service Client         | `0oazakcme19yZ44th1d7` | Origin — initiated the request        |
+| ProGearSales Agent     | `wlpzamsn8ruzX9RiH1d7` | Acted on behalf of the service client |
+| ProGearInventory Agent | `wlpzantdeiOQGRrpF1d7` | Acted on behalf of ProGearSales       |
+| InventoryMCP API       | —                      | Final recipient (`aud`)               |
 
 ## Sequence Diagram
 
@@ -267,7 +267,7 @@ sequenceDiagram
 
     rect rgb(0, 60, 35)
         Note over SC,ProGearAS: Step 1 — Client Credentials Grant
-        SC->>+ProGearAS: POST /oauth2/auszakltaaxuEH0s71d7/v1/token<br/>grant_type=client_credentials · scope=agent.invoke<br/>resource=https://progear.com/sales
+        SC->>+ProGearAS: POST /oauth2/auszakltaaxuEV0s71d7/v1/token<br/>grant_type=client_credentials · scope=agent.invoke<br/>resource=https://progear.com/sales
         ProGearAS-->>-SC: T1: access_token<br/>aud=progear.com/sales · sub=ServiceClient
     end
 
@@ -281,7 +281,7 @@ sequenceDiagram
 
     rect rgb(40, 0, 80)
         Note over PSA,PIAS: Step 3 — JWT Bearer Grant (ProGearInventory AS)
-        PSA->>+PIAS: POST /oauth2/auszalb8rzrFTrhPa1d7/v1/token<br/>grant_type=jwt-bearer · assertion=T2<br/>client_assertion=JWT(iss=PSA, aud=ProGearInventory AS)
+        PSA->>+PIAS: POST /oauth2/auszalb8rzrRVrhPa1d7/v1/token<br/>grant_type=jwt-bearer · assertion=T2<br/>client_assertion=JWT(iss=PSA, aud=ProGearInventory AS)
         PIAS-->>-PSA: T3: access_token<br/>aud=progear.com/inventory · cid=PSA
     end
 
