@@ -18,7 +18,9 @@
 # free-tier max is 10 s, Pro max is 26 s.
 [functions]
   node_bundler = "nft"
-  timeout      = 26
+
+[functions."*"]
+  timeout = 26
 
 # Redirect all unmatched paths to Next.js (required for dynamic routes)
 [[redirects]]
