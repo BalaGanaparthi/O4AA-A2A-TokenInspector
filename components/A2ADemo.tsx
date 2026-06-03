@@ -170,7 +170,9 @@ export default function A2ADemo() {
                   OKTA
                 </span>
                 <span className="text-slate-600">|</span>
-                <h1 className="text-base font-bold text-slate-100 tracking-wide">A2A Identity Chaining</h1>
+                <h1 className="text-base font-bold text-slate-100 tracking-wide">
+                  {scenario === 'hi' ? 'Human' : 'NHI'} : A2A Identity Chaining
+                </h1>
               </div>
               <p className="text-xs text-indigo-400/60 tracking-[0.2em] uppercase mt-0.5 font-medium">
                 {scenario === 'hi' ? 'Human Identity Scenario' : 'Service Client Scenario'}
