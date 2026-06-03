@@ -3,7 +3,7 @@
 ## 1. Get ProGear Service Client Tokens using OAuth client credentials grant flow for ProGearSales Agent
 
 ```bash
-curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/auszakltaaxuEV0s71d7/v1/token' \
+curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/proj/v1/token' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --header 'Authorization: Basic <B64{ClientID:ClientSecret}>' \
 --data-urlencode 'grant_type=client_credentials' \
@@ -23,7 +23,7 @@ curl --location 'https://ok-secures-ai.oktapreview.com/oauth2/v1/token' \
 --data-urlencode 'subject_token={AccessTokenFromStep1}' \
 --data-urlencode 'subject_token_type=urn:ietf:params:oauth:token-type:access_token' \
 --data-urlencode 'requested_token_type=urn:ietf:params:oauth:token-type:id-jag' \
---data-urlencode 'audience=https://ok-secures-ai.oktapreview.com/oauth2/auszalb8rzrRVrhPa1d7' \
+--data-urlencode 'audience=https://ok-secures-ai.oktapreview.com/oauth2/hen ' \
 --data-urlencode 'resource=https://progear.com/inventory' \
 --data-urlencode 'client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer' \
 --data-urlencode 'client_assertion={JWTBearerToken}' \
