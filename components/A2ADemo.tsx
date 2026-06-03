@@ -283,7 +283,7 @@ export default function A2ADemo() {
           selectedToken={selectedToken}
           onSelectToken={setSelectedToken}
         />
-        <ConfigPanel config={config} selectedToken={selectedToken} actSubIds={actSubIds} />
+        <ConfigPanel config={config} selectedToken={selectedToken} actSubIds={actSubIds} scenario={scenario} />
       </div>
     </div>
   )

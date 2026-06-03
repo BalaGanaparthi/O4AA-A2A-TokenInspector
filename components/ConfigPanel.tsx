@@ -1,11 +1,13 @@
 'use client'
 
 import type { AppConfig } from '@/types'
+import type { Scenario } from './FlowPanel'
 
 interface ConfigPanelProps {
   config: AppConfig | null
   selectedToken: string | null
   actSubIds?: string[]   // sub values extracted from the act chain of the current token
+  scenario: Scenario
 }
 
 const CONFIG_ITEMS: {
@@ -25,7 +27,7 @@ const CONFIG_ITEMS: {
   { key: 'inventoryMcpAudience',         label: 'InventoryMCP Audience',           tag: 'i', tokens: ['T4', 'T5'] },
 ]
 
-export default function ConfigPanel({ config, selectedToken, actSubIds }: ConfigPanelProps) {
+export default function ConfigPanel({ config, selectedToken, actSubIds, scenario }: ConfigPanelProps) {
   const actMatchCount = actSubIds
     ? CONFIG_ITEMS.filter((i) => actSubIds.includes(config?.[i.key] ?? '')).length
     : 0
@@ -66,6 +68,12 @@ export default function ConfigPanel({ config, selectedToken, actSubIds }: Config
         {CONFIG_ITEMS.map((item) => {
           const value = config?.[item.key] ?? ''
 
+          // Resolve display label — serviceClientId changes based on scenario
+          const displayLabel =
+            item.key === 'serviceClientId' && scenario === 'hi'
+              ? 'Web App Client ID'
+              : item.label
+
           // act-chain match: this config value appears as a sub in the act chain
           const isActMatch = !!(actSubIds && value && actSubIds.includes(value))
 
@@ -102,7 +110,7 @@ export default function ConfigPanel({ config, selectedToken, actSubIds }: Config
                   'text-xs font-bold leading-snug truncate flex-1',
                   isActMatch ? 'text-amber-200' : isTokenRelevant ? 'text-slate-200' : 'text-slate-500',
                 ].join(' ')}>
-                  {item.label}
+                  {displayLabel}
                 </p>
                 {isActMatch && (
                   <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/25 text-amber-300 border border-amber-400/30 shrink-0 uppercase tracking-wide">

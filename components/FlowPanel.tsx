@@ -26,12 +26,16 @@ const BLOCK1 = {
   },
 }
 
+const BLOCK2_DESCRIPTION = {
+  nhi: 'Presents T1(M2M) to ProGear Sales AS for an id-jag targeting ProGearInventory (T2), then presents T2 at ProGearInventory AS for an A2A access token (T3) to access ProGearInventory agent.',
+  hi:  'Presents T1(User Access Token) to ProGear Sales AS for an id-jag targeting ProGearInventory (T2), then presents T2 at ProGearInventory AS for an A2A access token (T3) to access ProGearInventory agent.',
+}
+
 const BLOCKS_2_3 = [
   {
     id: 'progear-sales',
     title: 'ProGearSales Agent  T1 → T3',
-    description:
-      'Presents T1(M2M) to ProGear Sales AS for an id-jag targeting ProGearInventory (T2), then presents T2 at ProGearInventory AS for an A2A access token (T3) to access ProGearInventory agent.',
+    description: '' as string, // resolved per scenario below
     agentTo: 'ProGearInventory Agent',
     color: 'cyan' as const,
     subSteps: [
@@ -81,7 +85,9 @@ export default function FlowPanel({
         },
       ],
     },
-    ...BLOCKS_2_3,
+    // Block 2 description changes based on scenario (M2M vs User Access Token)
+    { ...BLOCKS_2_3[0], description: BLOCK2_DESCRIPTION[scenario] },
+    BLOCKS_2_3[1],
   ]
 
   return (
